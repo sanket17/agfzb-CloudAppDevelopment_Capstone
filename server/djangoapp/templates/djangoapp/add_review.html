@@ -11,6 +11,21 @@
 
 </head>
     <body>
-    <!--Add review form here -->
+        <li>
+            <form class="form-inline" action="{% url 'djangoapp:add_review' dealer_id=dealer_id %}" method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Review" name="review" >
+                    <input type="checkbox" class="form-control" placeholder="Purchase" name="purchase" >
+                    <input type="date" class="form-control" placeholder="Purchase Date" name="purchase_date" >
+                    <input type="text" class="form-control" placeholder="Name" name="name" >
+                    <input type="text" class="form-control" placeholder="Car Make" name="car_make" >
+                    <input type="text" class="form-control" placeholder="Car Model" name="car_model" >
+                    <input type="text" class="form-control" placeholder="Car Year" name="car_year" >
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                    
+                </div>
+            </form>
+        </li>
     </body>
 </html>
