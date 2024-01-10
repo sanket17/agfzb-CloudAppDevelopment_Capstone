@@ -10,6 +10,7 @@ from datetime import datetime
 import logging
 import json
 
+from .models import CarModel
 from .restapis import (get_dealers_from_cf, get_dealer_by_id_from_cf, 
 get_dealer_reviews_from_cf, post_request)
 
@@ -73,24 +74,26 @@ def registration_request(request):
 # Update the `get_dealerships` view to render the index page with a list of dealerships
 def get_dealerships(request):
     if request.method == "GET":
+        context = {}
         url = "https://kundansable-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
-        # Get dealers from the URL
         dealerships = get_dealers_from_cf(url)
-        # Concat all dealer's short name
-        dealer_names = ' '.join([dealer.short_name for dealer in dealerships])
-        # Return a list of dealer short name
-        return HttpResponse(dealer_names)
+        context['dealerships'] = dealerships
+        return render(request, 'djangoapp/index.html', context)
 
 # Create a `get_dealer_details` view to render tdealershipshe reviews of a dealer
 def get_dealer_details(request, dealer_id):
      if request.method == "GET":
-        url = "https://kundansable-3002.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/get"
+        context = {}
         # Get dealers from the URL
+        url = "https://kundansable-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        dealer = get_dealer_by_id_from_cf(url, dealer_id)
+
+        url = "https://kundansable-3002.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/get"
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
-        # # Concat all dealer's short name
-        results = ' '.join(["{}-{}".format(review.name, review.sentiment) for review in reviews])
-        # Return a list of review short name
-        return HttpResponse(results)
+        context['reviews'] = reviews
+        context['dealer'] = dealer
+        print(reviews)
+        return render(request, 'djangoapp/dealer_details.html', context)
 
         
 # Create a `add_review` view to submit a review
@@ -108,4 +111,7 @@ def add_review(request, dealer_id):
         review["car_year"] = request.POST.get('car_year')
         url = "https://kundansable-3004.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/post"
         res = post_request(url, review)
-    return render(request, 'djangoapp/add_review.html', {"dealer_id": dealer_id})
+    url = "https://kundansable-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    dealer = get_dealer_by_id_from_cf(url, dealer_id)
+    cars = CarModel.objects.all()
+    return render(request, 'djangoapp/add_review.html', {"dealer": dealer, "cars": cars})
