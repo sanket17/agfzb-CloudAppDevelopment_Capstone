@@ -92,7 +92,6 @@ def get_dealer_details(request, dealer_id):
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
         context['reviews'] = reviews
         context['dealer'] = dealer
-        print(reviews)
         return render(request, 'djangoapp/dealer_details.html', context)
 
         
@@ -111,6 +110,7 @@ def add_review(request, dealer_id):
         review["car_year"] = request.POST.get('car_year')
         url = "https://kundansable-3004.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/post"
         res = post_request(url, review)
+        return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
     url = "https://kundansable-3000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealer = get_dealer_by_id_from_cf(url, dealer_id)
     cars = CarModel.objects.all()
