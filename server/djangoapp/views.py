@@ -9,6 +9,8 @@ from django.contrib import messages
 from datetime import datetime
 import logging
 import json
+from .restapis import (get_dealers_from_cf, get_dealer_by_id_from_cf, 
+get_dealer_reviews_from_cf, post_request)
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -77,9 +79,9 @@ def registration_request(request):
 def get_dealerships(request):
     if request.method == "GET":
         context = {}
-        # url = "https://sankettikam1-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
-        # dealerships = get_dealers_from_cf(url)
-        # context['dealerships'] = dealerships
+        url = "https://sankettikam1-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        dealerships = get_dealers_from_cf(url)
+        context['dealerships'] = dealerships
         return render(request, 'djangoapp/index.html', context)
 
 # Create a `get_dealer_details` view to render tdealershipshe reviews of a dealer
@@ -87,10 +89,10 @@ def get_dealer_details(request, dealer_id):
      if request.method == "GET":
         context = {}
         # Get dealers from the URL
-        url = "https://sankettikam1-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+        url = "https://sankettikam1-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
         dealer = get_dealer_by_id_from_cf(url, dealer_id)
 
-        url = "https://sankettikam1-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/get"
+        url = "https://sankettikam1-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/get_reviews"
         reviews = get_dealer_reviews_from_cf(url, dealer_id)
         context['reviews'] = reviews
         context['dealer'] = dealer
@@ -110,10 +112,10 @@ def add_review(request, dealer_id):
         review["car_make"] = request.POST.get('car_make')
         review["car_model"] = request.POST.get('car_model')
         review["car_year"] = request.POST.get('car_year')
-        url = "https://sankettikam1-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/reviews/post"
+        url = "https://sankettikam1-5000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/api/post_review"
         res = post_request(url, review)
         return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
-    url = "https://sankettikam1-8000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
+    url = "https://sankettikam1-3000.theiadockernext-1-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/dealerships/get"
     dealer = get_dealer_by_id_from_cf(url, dealer_id)
     cars = CarModel.objects.all()
     return render(request, 'djangoapp/add_review.html', {"dealer": dealer, "cars": cars})
