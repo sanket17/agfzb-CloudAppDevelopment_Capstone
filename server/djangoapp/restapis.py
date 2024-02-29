@@ -95,7 +95,7 @@ def analyze_review_sentiments(text):
     url = "https://api.us-south.natural-language-understanding.watson.cloud.ibm.com/instances/48123a59-1f30-45da-b644-70c0d7e8c589"
     res = get_request(
         url, 
-        api_key="ZexmEUY1WVNtzjXo488cRx-eRwb-V9S_Iq-cZJLITMwl",
+        api_key="",
         features={
             "sentiment": {}
         },
